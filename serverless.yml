@@ -1,0 +1,46 @@
+# "org" ensures this Service is used with the correct Serverless Framework Access Key.
+org: personal116
+service: serverless-chatbot
+
+provider:
+  name: aws
+  runtime: nodejs18.x
+  region: us-east-1
+  stage: dev
+  environment:
+    DB_USER: postgres
+    DB_HOST: database-1.cgdco0e6wg3a.us-east-1.rds.amazonaws.com
+    DB_NAME: postgres
+    DB_PASSWORD: tqahCJXW3fH9Q3h
+    DB_PORT: 5432
+    BEDROCK_REGION: us-east-1
+  iam:
+    role:
+      statements:
+        - Effect: Allow
+          Action:
+            - bedrock:InvokeModel
+            - bedrock-runtime:InvokeModel
+          Resource: "arn:aws:bedrock:*::foundation-model/*"
+
+functions:
+  app:
+    handler: index.handler
+    events:
+      - http:
+          path: /
+          method: ANY
+          cors: true
+      - http:
+          path: /{proxy+}
+          method: ANY
+          cors: true
+    timeout: 29
+    memorySize: 256
+
+plugins:
+  - serverless-offline
+
+custom:
+  serverless-offline:
+    httpPort: 3000 
